@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +21,14 @@ import {
   Users,
   Package,
   ShoppingCart,
-  RefreshCw
+  RefreshCw,
+  Shield,
+  Clock,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  Eye,
+  Phone
 } from "lucide-react";
 
 interface CEODashboardTabsProps {
@@ -31,6 +37,56 @@ interface CEODashboardTabsProps {
 
 const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
   const [emailDigestEnabled, setEmailDigestEnabled] = useState(false);
+
+  // Mock data for the CEO Greatness Strip
+  const safetyMetrics = [
+    { metric: "DA Cash Exposure", value: "₦0", status: "success", icon: Shield },
+    { metric: "System Errors (Last 24h)", value: "2", status: "warning", icon: AlertCircle },
+    { metric: "Manual Overrides Today", value: "1", status: "warning", icon: Eye },
+    { metric: "FC Honesty Audit Score", value: "88", status: "warning", icon: CheckCircle }
+  ];
+
+  const fireAlerts = [
+    { type: "CRM Delay", description: "4 orders stuck at 'Called' >60 mins", assigned: "Joy", status: "error", priority: "high" },
+    { type: "Refund Spike", description: "Conditioner SKU ↑ to 6.5% today", assigned: "FC", status: "warning", priority: "medium" },
+    { type: "SLA Breach", description: "Lagos DA marked delivered w/o OTP", assigned: "Ops Lead", status: "error", priority: "high" },
+    { type: "Today's Likely Fraud", description: "Order marked paid, no POS match (₦25,000)", assigned: "FC", status: "error", priority: "critical" },
+    { type: "WhatsApp Alert Trigger", description: "🔔 Send if any 🔴 or ⚠️ fraud row appears", assigned: "System", status: "info", priority: "auto" }
+  ];
+
+  const executionMetrics = [
+    { action: "Leads Called < 10 mins", target: "100%", actual: "86%", status: "warning" },
+    { action: "Creative Uploads Today", target: "12", actual: "7", status: "error" },
+    { action: "Packages Sealed w/ Proof", target: "100%", actual: "94%", status: "success" }
+  ];
+
+  const orderFlow = [
+    { stage: "Orders Created Today", count: 164, source: "Zoho CRM" },
+    { stage: "Out for Delivery", count: 91, source: "CRM > DAs" },
+    { stage: "Delivered Today", count: 72, source: "OTP Confirm" },
+    { stage: "Week's Orders", count: 856, source: "Zoho CRM" },
+    { stage: "Week's Delivered", count: 611, source: "OTP Log" },
+    { stage: "Month's Orders", count: 3412, source: "CRM Export" },
+    { stage: "Month's Delivered", count: 2907, source: "CRM + Logs" }
+  ];
+
+  const additionalAlerts = [
+    { type: "Unapproved Dispatch", trigger: "Goods dispatched without FC or Inventory Manager signature", notify: "CEO, FC, Inventory Lead" },
+    { type: "Inventory vs Sales Mismatch", trigger: "CRM says product sold, but Zoho bin shows 0 quantity", notify: "CEO, Inventory, Audit" },
+    { type: "Unknown POS Credit", trigger: "Payment landed in Moniepoint with no order tagged to phone number", notify: "CEO, FC" },
+    { type: "WhatsApp Number Reuse", trigger: "Multiple orders linked to same phone number within 24h", notify: "Fraud Desk, Telesales" },
+    { type: "Late CRM Sync > 15 mins", trigger: "CRM webhook or Zoho sync delay > 15 minutes", notify: "Tech, FC" },
+    { type: "Delivery After Sunset (7pm)", trigger: "Delivery marked after 7pm without override or flag", notify: "CEO, Ops Lead" },
+    { type: "Product Switched in Transit", trigger: "DA records change in SKU or bundle after package creation", notify: "FC, CEO, Logistics" },
+    { type: "Repeated SLA Miss (Same DA)", trigger: "DA fails OTP, proof upload, or timing SLA >3 times in a week", notify: "CEO, HR, Ops Lead" },
+    { type: "Suspicious Manual Edit Spike", trigger: "More than 5 manual edits done in a day across CRM or Inventory", notify: "CEO, Audit" },
+    { type: "High-Cost Region Spike", trigger: "Orders from a region with Cost per Delivery or Ad Spend suddenly 2x avg.", notify: "CEO, Finance" },
+    { type: "Staff Suspicion Index 🚩", trigger: "Late > 3x/week, repeated login absence, tampering logs, phone unreachability", notify: "CEO, HR, FC" },
+    { type: "Staff Bypass Attempt", trigger: "Staff tries to approve or override a field above their access rights", notify: "CEO, Admin" },
+    { type: "Shadow Work Spike", trigger: "Work done outside regular hours with no matching log or proof", notify: "CEO, HR" },
+    { type: "Ghost Login", trigger: "Staff login recorded from unknown IP or device", notify: "CEO, Tech" },
+    { type: "Staff Daily Risk Score ⚖️", trigger: "Real-time score generated using lateness, error flags, override attempts, audit gaps", notify: "CEO, HR, GM" }
+  ];
 
   // Mock data - replace with real API calls
   const dailyMetrics = {
@@ -86,8 +142,20 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
       case "success": return <Badge className="bg-green-100 text-green-800">✅ Good</Badge>;
       case "warning": return <Badge className="bg-yellow-100 text-yellow-800">⚠️ Monitor</Badge>;
       case "error": return <Badge className="bg-red-100 text-red-800">❌ Fix</Badge>;
+      case "critical": return <Badge className="bg-red-200 text-red-900">🚨 Critical</Badge>;
+      case "info": return <Badge className="bg-blue-100 text-blue-800">🔔 Auto</Badge>;
       case "resolved": return <Badge className="bg-blue-100 text-blue-800">✅ Resolved</Badge>;
       default: return <Badge className="bg-gray-100 text-gray-800">-</Badge>;
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "critical": return "border-l-4 border-red-600 bg-red-50";
+      case "high": return "border-l-4 border-orange-500 bg-orange-50";
+      case "medium": return "border-l-4 border-yellow-500 bg-yellow-50";
+      case "auto": return "border-l-4 border-blue-500 bg-blue-50";
+      default: return "border-l-4 border-gray-300 bg-gray-50";
     }
   };
 
@@ -101,30 +169,103 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
 
   return (
     <div className="w-full">
-      {/* Fixed Top Bar */}
-      <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white p-4 mb-6 rounded-lg shadow-lg">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center space-x-2">
-            <DollarSign className="w-5 h-5" />
-            <span className="font-semibold">Cash: {formatCurrency(dailyMetrics.cashOnHand)}</span>
+      {/* 10-Second CEO Greatness Strip */}
+      <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white p-6 mb-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+          🧠 CEO Command Center – Vitalvida
+          <span className="text-sm bg-white/20 px-2 py-1 rounded">Last updated: {new Date().toLocaleTimeString()}</span>
+        </h2>
+        
+        {/* Are we safe? */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Shield className="w-5 h-5" />
+            🔒 Are we safe?
+          </h3>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {safetyMetrics.map((metric, index) => (
+              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <metric.icon className="w-5 h-5" />
+                  {getStatusIcon(metric.status)}
+                </div>
+                <p className="text-sm opacity-90 mt-1">{metric.metric}</p>
+                <p className="text-xl font-bold">{metric.value}</p>
+              </div>
+            ))}
           </div>
-          <div className="flex items-center space-x-2">
-            <ShoppingCart className="w-5 h-5" />
-            <span>Orders Today: {dailyMetrics.ordersToday}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RefreshCw className="w-5 h-5" />
-            <span>Refunds: {dailyMetrics.refundsYesterday}</span>
-          </div>
-          <div className="flex items-center space-x-2">
+        </div>
+
+        {/* Where is the fire? */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
-            <span className="text-yellow-200">DA Exposure: {formatCurrency(dailyMetrics.daExposure)}</span>
+            🔥 Where is the fire?
+          </h3>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <div className="space-y-2">
+              {fireAlerts.map((alert, index) => (
+                <div key={index} className={`p-3 rounded-lg ${getPriorityColor(alert.priority)}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <span className="font-semibold text-gray-800">{alert.type}:</span>
+                      <span className="text-gray-700 ml-2">{alert.description}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-gray-600">→ {alert.assigned}</span>
+                      {getStatusIcon(alert.status)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Is execution happening? */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Target className="w-5 h-5" />
+            📊 Is execution happening?
+          </h3>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {executionMetrics.map((metric, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm opacity-90">{metric.action}</p>
+                    <p className="text-lg font-semibold">{metric.actual} / {metric.target}</p>
+                  </div>
+                  {getStatusIcon(metric.status)}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Order Flow Tracker */}
+        <div>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Package className="w-5 h-5" />
+            📦 Order Flow Tracker
+          </h3>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {orderFlow.map((flow, index) => (
+                <div key={index} className="text-center">
+                  <p className="text-2xl font-bold">{flow.count.toLocaleString()}</p>
+                  <p className="text-sm opacity-90">{flow.stage}</p>
+                  <p className="text-xs opacity-75">{flow.source}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      <Tabs defaultValue="daily-command" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-6">
+      <Tabs defaultValue="real-time-alerts" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9 mb-6">
+          <TabsTrigger value="real-time-alerts" className="text-xs">🚨 Alerts</TabsTrigger>
           <TabsTrigger value="daily-command" className="text-xs">📍 Daily</TabsTrigger>
           <TabsTrigger value="performance" className="text-xs">📊 Performance</TabsTrigger>
           <TabsTrigger value="exceptions" className="text-xs">🚨 Exceptions</TabsTrigger>
@@ -134,6 +275,66 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
           <TabsTrigger value="digest" className="text-xs">📬 Digest</TabsTrigger>
           <TabsTrigger value="experiments" className="text-xs">🧪 Lab</TabsTrigger>
         </TabsList>
+
+        {/* Real-Time Alert Log Tab */}
+        <TabsContent value="real-time-alerts" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Phone className="w-5 h-5 text-green-600" />
+                Real-Time Alert Log & WhatsApp Triggers
+              </CardTitle>
+              <CardDescription>Complete audit trail of all alerts sent to CEO, FC, and team members</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <h4 className="font-semibold text-green-800 mb-2">Alert System Status</h4>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <span className="text-green-700">Last Alert Sent:</span>
+                    <p className="font-medium">Today 2:34 PM</p>
+                  </div>
+                  <div>
+                    <span className="text-green-700">Total Alerts Today:</span>
+                    <p className="font-medium">8 alerts</p>
+                  </div>
+                  <div>
+                    <span className="text-green-700">Unresolved:</span>
+                    <p className="font-medium text-red-600">3 critical</p>
+                  </div>
+                  <div>
+                    <span className="text-green-700">Auto-Escalated:</span>
+                    <p className="font-medium">1 (30min rule)</p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-semibold mb-3">All Alert Types & Triggers</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Alert Type</TableHead>
+                    <TableHead>Trigger Condition</TableHead>
+                    <TableHead>Notify</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {additionalAlerts.map((alert, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{alert.type}</TableCell>
+                      <TableCell className="text-sm max-w-md">{alert.trigger}</TableCell>
+                      <TableCell className="text-sm">{alert.notify}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-green-700">Active</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* Daily Command Tab */}
         <TabsContent value="daily-command" className="space-y-6">
@@ -146,7 +347,7 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-green-700">{formatCurrency(dailyMetrics.cashOnHand)}</div>
+                <div className="text-3xl font-bold text-green-700">₦8,250,000</div>
                 <p className="text-sm text-gray-600 mt-1">GTB + Moniepoint + Zoho Books</p>
               </CardContent>
             </Card>
@@ -159,12 +360,9 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-blue-700">{dailyMetrics.ordersToday}</div>
-                <p className="text-sm text-gray-600 mt-1">Today vs {dailyMetrics.ordersYesterday} yesterday</p>
-                {dailyMetrics.ordersToday > dailyMetrics.ordersYesterday ? 
-                  <TrendingUp className="w-4 h-4 text-green-600 mt-1" /> : 
-                  <TrendingDown className="w-4 h-4 text-red-600 mt-1" />
-                }
+                <div className="text-3xl font-bold text-blue-700">164</div>
+                <p className="text-sm text-gray-600 mt-1">Today vs 142 yesterday</p>
+                <TrendingUp className="w-4 h-4 text-green-600 mt-1" />
               </CardContent>
             </Card>
 
@@ -176,7 +374,7 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-purple-700">{formatCurrency(dailyMetrics.adSpendToday)}</div>
+                <div className="text-3xl font-bold text-purple-700">₦132,000</div>
                 <p className="text-sm text-gray-600 mt-1">Facebook + TikTok + Google</p>
               </CardContent>
             </Card>
@@ -189,7 +387,7 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-green-700">{formatCurrency(dailyMetrics.daExposure)}</div>
+                <div className="text-3xl font-bold text-green-700">₦0</div>
                 <Badge className="bg-green-100 text-green-800 mt-2">✅ All Clear</Badge>
               </CardContent>
             </Card>
@@ -202,7 +400,7 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-orange-700">{dailyMetrics.refundsYesterday}</div>
+                <div className="text-3xl font-bold text-orange-700">3</div>
                 <p className="text-sm text-gray-600 mt-1">Quality + Delivery issues</p>
               </CardContent>
             </Card>
@@ -216,9 +414,9 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {dailyMetrics.topRisks.map((risk, index) => (
-                    <p key={index} className="text-sm text-red-700 bg-red-50 p-2 rounded">{risk}</p>
-                  ))}
+                  <p className="text-sm text-red-700 bg-red-50 p-2 rounded">Low ROAS on TikTok ads (₦45K spent, 1 order)</p>
+                  <p className="text-sm text-red-700 bg-red-50 p-2 rounded">DA_KD-022 not responding (2 pending orders)</p>
+                  <p className="text-sm text-red-700 bg-red-50 p-2 rounded">Fulani Conditioner stockout in Abuja</p>
                 </div>
               </CardContent>
             </Card>
@@ -571,7 +769,7 @@ const CEODashboardTabs = ({ currentCEO }: CEODashboardTabsProps) => {
 
       {/* Footer with last updated */}
       <div className="text-center text-sm text-gray-500 mt-8">
-        Last Updated: {new Date().toLocaleString()} • Vitalvida CEO Command Center
+        Last Updated: {new Date().toLocaleString()} • Vitalvida CEO Command Center • Auto-refresh every 10 mins
       </div>
     </div>
   );

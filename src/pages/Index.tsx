@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Building2, Lock, Users, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import CEODashboardTabs from "@/components/CEODashboard/CEODashboardTabs";
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -158,8 +158,5 @@ const Index = () => {
     </div>
   );
 };
-
-// Import the dashboard component that we'll create next
-import CEODashboardTabs from "@/components/CEODashboardTabs";
 
 export default Index;
